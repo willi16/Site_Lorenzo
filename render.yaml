@@ -12,7 +12,9 @@ services:
     name: ba-construction
     runtime: node
     plan: free
-    region: frankfurt
+    # Doit rester proche de la base Neon (ici us-east-2 / Ohio) pour limiter
+    # la latence des requêtes SSR. Adapter si la base est dans une autre région.
+    region: ohio
     branch: main
     autoDeploy: true
     healthCheckPath: /api/health

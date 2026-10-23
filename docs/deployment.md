@@ -14,7 +14,7 @@ Objectif : déployer gratuitement, avec un seul service qui sert l'API + le rend
 ## 1) Créer la base de données (Neon)
 
 1. Créer un compte sur [neon.tech](https://neon.tech/) (gratuit).
-2. Créer un projet, région la plus proche (ex. `eu-central-1`).
+2. Créer un projet dans la **même région que Render** (le `render.yaml` utilise `ohio` = `us-east-2`) pour limiter la latence des requêtes SSR.
 3. Copier la **connection string** fournie : `postgresql://user:password@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require`
 4. La conserver pour l'étape suivante.
 
