@@ -1,0 +1,59 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Déploiement Render — plan gratuit
+#
+# Architecture : un seul service Node sert l'API Express, le rendu SSR et les
+# assets du client Vite. La base PostgreSQL est hébergée séparément sur Neon
+# (offre gratuite), car les bases gratuites de Render expirent.
+#
+# Voir docs/deployment.md pour la procédure complète.
+# ─────────────────────────────────────────────────────────────────────────────
+services:
+  - type: web
+    name: ba-construction
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /api/health
+    # Les dépendances de développement sont nécessaires au build
+    # (TypeScript, Vite, Prisma CLI). Les migrations sont appliquées pendant
+    # le build : DATABASE_URL doit donc être joignable et les variables
+    # d'environnement sont disponibles à cette étape.
+    buildCommand: npm ci --include=dev && npm run build && npm run db:deploy
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "true"
+      - key: MAIL_ENABLED
+        value: "false"
+      - key: UPLOAD_DIR
+        value: ./storage/uploads
+      # Secrets générés automatiquement par Render (64 caractères aléatoires).
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CSRF_SECRET
+        generateValue: true
+      # À renseigner dans le tableau de bord Render (valeurs propres au compte).
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: API_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: SEED_ADMIN_EMAIL
+        value: admin@ba-construction.tg
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      - key: SEED_EDITOR_EMAIL
+        value: editeur@ba-construction.tg
+      - key: SEED_EDITOR_PASSWORD
+        sync: false
