@@ -38,7 +38,7 @@ export default function ServiceDetailPage() {
         title={service.seoTitle ?? `${service.title} — B.A. Construction Togo`}
         description={service.seoDescription ?? service.excerpt}
         canonical={`/services/${service.slug}`}
-        image={service.coverImage ?? '/og-image.svg'}
+        image={service.coverImage ?? '/og-image.png'}
         type="article"
         jsonLd={[
           organizationSchema(),

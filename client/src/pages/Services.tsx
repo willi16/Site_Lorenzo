@@ -15,7 +15,7 @@ export default function ServicesPage() {
     <>
       <Seo
         title="Nos services d’architecture et de construction — B.A. Construction Togo"
-        description="Construction résidentielle, bâtiments commerciaux, rénovation et extension, aménagement intérieur et extérieur, suivi de chantier. Toutes nos prestations d’architecture à Lomé, Togo."
+        description="Construction résidentielle, bâtiments commerciaux, rénovation, extension et aménagement. Toutes nos prestations d’architecture à Lomé, au Togo."
         canonical="/services"
         keywords={[
           'service architecte Togo',

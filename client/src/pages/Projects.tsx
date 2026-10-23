@@ -62,7 +62,7 @@ export default function ProjectsPage() {
     <>
       <Seo
         title="Nos réalisations — Portfolio de projets livrés au Togo"
-        description="Découvrez nos réalisations : maisons individuelles, immeubles, bâtiments commerciaux, rénovations et aménagements au Togo. Photos, budgets, superficies et détails techniques."
+        description="Découvrez nos réalisations : maisons, immeubles, commerces, rénovations et aménagements au Togo. Photos, budgets, superficies et détails techniques."
         canonical="/realisations"
         keywords={[
           'portfolio architecte Togo',

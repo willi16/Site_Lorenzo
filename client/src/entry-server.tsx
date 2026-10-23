@@ -4,7 +4,7 @@ import {
   createStaticRouter,
   StaticRouterProvider,
 } from 'react-router-dom/server';
-import { HeadCollector, HeadProvider } from '@/lib/seo';
+import { absoluteUrl, HeadCollector, HeadProvider, SITE_URL } from '@/lib/seo';
 import { setDataSource, type DataSource } from '@/lib/data';
 import { routes } from './app/routes';
 
@@ -116,11 +116,9 @@ function buildHead(
   },
   existing: string,
 ): string {
-  const siteUrl = (
-    (import.meta.env?.VITE_SITE_URL as string | undefined) ?? 'https://ba-construction.tg'
-  ).replace(/\/$/, '');
-  const canonical = state.canonical ? `${siteUrl}${state.canonical}` : undefined;
-  const image = state.image ? `${siteUrl}${state.image}` : `${siteUrl}/og-image.svg`;
+  const siteUrl = SITE_URL;
+  const canonical = state.canonical ? absoluteUrl(state.canonical) : undefined;
+  const image = state.image ? absoluteUrl(state.image) : absoluteUrl('/og-image.png');
 
   const tags: string[] = [
     `<title>${escapeAttr(state.title)}</title>`,
@@ -143,6 +141,7 @@ function buildHead(
     `<meta property="og:description" content="${escapeAttr(state.description)}" />`,
     `<meta property="og:url" content="${escapeAttr(canonical ?? siteUrl)}" />`,
     `<meta property="og:image" content="${escapeAttr(image)}" />`,
+    `<meta property="og:image:alt" content="B.A. Construction — Architecture et construction au Togo" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escapeAttr(state.title)}" />`,
     `<meta name="twitter:description" content="${escapeAttr(state.description)}" />`,

@@ -20,7 +20,7 @@ export default function BlogPostPage() {
         title={post.seoTitle ?? `${post.title} — B.A. Construction`}
         description={post.seoDescription ?? post.excerpt}
         canonical={`/actualites/${post.slug}`}
-        image={post.coverImage ?? '/og-image.svg'}
+        image={post.coverImage ?? '/og-image.png'}
         type="article"
         publishedTime={post.publishedAt}
         author={post.authorName}

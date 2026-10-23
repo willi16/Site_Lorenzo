@@ -74,9 +74,9 @@ export default function HomePage() {
     <>
       <Seo
         title="B.A. Construction — Architecte & constructeur au Togo"
-        description="Cabinet d’architecture et de construction à Lomé : construction résidentielle, bâtiments commerciaux, rénovation, extension et aménagement. Devis clair, délais tenus, chantier suivi."
+        description="Cabinet d’architecture et de construction à Lomé : maisons, bâtiments commerciaux, rénovation et aménagement. Devis clair, délais tenus, chantier suivi."
         canonical="/"
-        image="/og-image.svg"
+        image="/og-image.png"
         keywords={[
           'architecte Lomé',
           'construction maison Togo',

@@ -8,7 +8,7 @@ import { AppError } from '../lib/errors.js';
  * En-têtes de sécurité HTTP (Helmet) avec une CSP stricte mais compatible avec
  * les intégrations prévues : Google Maps, Google Analytics 4, Tag Manager, Hotjar.
  */
-export const securityHeaders: RequestHandler = helmet({
+const helmetMiddleware = helmet({
   contentSecurityPolicy: {
     useDefaults: true,
     directives: {
@@ -56,6 +56,24 @@ export const securityHeaders: RequestHandler = helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   hsts: env.isProd ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
 });
+
+/**
+ * Helmet v8 ne gère plus Permissions-Policy : on l'ajoute explicitement pour
+ * désactiver les capteurs et API sensibles dont le site n'a pas besoin.
+ */
+export const securityHeaders: RequestHandler = (req, res, next) => {
+  helmetMiddleware(req, res, (error?: unknown) => {
+    if (error) {
+      next(error);
+      return;
+    }
+    res.setHeader(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()',
+    );
+    next();
+  });
+};
 
 /**
  * CORS : liste blanche stricte. Les requêtes sans Origin (SSR, curl, health-check)

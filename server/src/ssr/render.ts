@@ -27,6 +27,11 @@ let entryPromise: Promise<EntryServerModule> | null = null;
 /** Charge (une seule fois) le bundle SSR produit par Vite côté client. */
 async function loadEntry(): Promise<EntryServerModule> {
   if (!entryPromise) {
+    // Le bundle SSR résout SITE_URL au chargement du module : on lui fournit
+    // l'URL publique configurée (APP_URL, déduite de RENDER_EXTERNAL_URL sur
+    // Render) pour que canonical/OG/sitemap utilisent le bon domaine.
+    (globalThis as { __SITE_URL__?: string }).__SITE_URL__ = env.APP_URL.replace(/\/+$/, '');
+
     const entryPath = path.join(env.repoRoot, 'client', 'dist-ssr', 'entry-server.js');
     entryPromise = import(pathToFileURL(entryPath).href) as Promise<EntryServerModule>;
     entryPromise.catch(() => {

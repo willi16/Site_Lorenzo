@@ -41,7 +41,7 @@ export default function ProjectDetailPage() {
         title={project.seoTitle ?? `${project.title} — Réalisation B.A. Construction`}
         description={project.seoDescription ?? project.excerpt}
         canonical={`/realisations/${project.slug}`}
-        image={project.coverImage ?? '/og-image.svg'}
+        image={project.coverImage ?? '/og-image.png'}
         type="article"
         keywords={[
           project.title,

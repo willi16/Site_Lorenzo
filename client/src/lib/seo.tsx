@@ -40,11 +40,28 @@ export interface HeadState {
   jsonLd: Record<string, unknown>[];
 }
 
-export const SITE_URL = (
-  typeof import.meta !== 'undefined' && import.meta.env?.VITE_SITE_URL
-    ? import.meta.env.VITE_SITE_URL
-    : 'https://ba-construction.tg'
-).replace(/\/$/, '');
+/**
+ * URL publique du site, résolue dans cet ordre :
+ * 1. le navigateur (domaine réellement visité) ;
+ * 2. la valeur injectée par le serveur SSR depuis `APP_URL`
+ *    (`globalThis.__SITE_URL__`, voir server/src/ssr/render.ts) ;
+ * 3. `VITE_SITE_URL` à la compilation ;
+ * 4. le domaine de marque par défaut.
+ *
+ * Cela évite des canonical/OG pointant vers un domaine qui ne sert pas encore
+ * le site (par exemple avant la mise en place d'un domaine personnalisé).
+ */
+function resolveSiteUrl(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+  const injected = (globalThis as { __SITE_URL__?: unknown }).__SITE_URL__;
+  if (typeof injected === 'string' && injected.trim()) return injected.trim();
+  const fromEnv = import.meta.env?.VITE_SITE_URL as string | undefined;
+  return fromEnv?.trim() || 'https://ba-construction.tg';
+}
+
+export const SITE_URL = resolveSiteUrl().replace(/\/+$/, '');
 
 export const SITE_NAME = 'B.A. Construction';
 export const SITE_TAGLINE = 'Architecture, construction et rénovation au Togo';
@@ -238,7 +255,7 @@ export function organizationSchema() {
     telephone: '+22891085550',
     email: 'contact@ba-construction.tg',
     slogan: SITE_TAGLINE,
-    image: absoluteUrl('/og-image.svg'),
+    image: absoluteUrl('/og-image.png'),
     logo: absoluteUrl('/logo.svg'),
     priceRange: '$$',
     address: {
@@ -319,7 +336,7 @@ export function projectSchema(project: {
     headline: project.title,
     description: project.excerpt || project.description.slice(0, 300),
     url: absoluteUrl(`/realisations/${project.slug}`),
-    image: project.image ? absoluteUrl(project.image) : absoluteUrl('/og-image.svg'),
+    image: project.image ? absoluteUrl(project.image) : absoluteUrl('/og-image.png'),
     dateCreated: String(project.year),
     creator: { '@id': `${SITE_URL}/#organization` },
     about: project.materials,
@@ -343,7 +360,7 @@ export function articleSchema(post: {
     headline: post.title,
     description: post.excerpt,
     url: absoluteUrl(`/actualites/${post.slug}`),
-    image: post.image ? absoluteUrl(post.image) : absoluteUrl('/og-image.svg'),
+    image: post.image ? absoluteUrl(post.image) : absoluteUrl('/og-image.png'),
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     author: { '@type': 'Person', name: post.author },

@@ -142,7 +142,9 @@ export function createApp(): Express {
     const candidate = path.join(prerenderDir, relative, 'index.html');
     if (!candidate.startsWith(prerenderDir + path.sep) || !fs.existsSync(candidate)) return next();
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-store, must-revalidate');
+    // `no-cache` force la revalidation (ETag) sans interdire le cache ni le
+    // bfcache ; `no-store` est réservé aux pages d'administration.
+    res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('X-Prerendered', 'hit');
     res.sendFile(candidate);
   });
@@ -186,9 +188,10 @@ export function createApp(): Express {
       for (const [key, value] of Object.entries(result.headers)) res.setHeader(key, value);
       if (!res.hasHeader('Content-Type')) res.setHeader('Content-Type', 'text/html; charset=utf-8');
       // Le HTML référence des assets dont le nom change à chaque build :
-      // il ne doit jamais être réutilisé depuis le cache du navigateur, sous
-      // peine de pointer vers une feuille de style supprimée (page sans style).
-      res.setHeader('Cache-Control', 'no-store, must-revalidate');
+      // `no-cache` impose une revalidation (ETag) à chaque visite, sans
+      // désactiver le cache ni le bfcache. L'administration, elle, ne doit
+      // jamais être conservée.
+      res.setHeader('Cache-Control', req.path.startsWith('/admin') ? 'no-store, must-revalidate' : 'no-cache');
       res.send(result.html);
     } catch (error) {
       logger.error({ err: error, path: req.originalUrl }, 'Rendu SSR impossible');

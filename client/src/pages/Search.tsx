@@ -36,7 +36,7 @@ export default function SearchPage() {
     <>
       <Seo
         title={q ? `Recherche « ${q} » — B.A. Construction` : 'Recherche — B.A. Construction Togo'}
-        description="Cherchez parmi nos réalisations, nos prestations et nos publications : architecture, construction, rénovation et tendances architecturales au Togo."
+        description="Cherchez parmi nos réalisations, prestations et publications : architecture, construction, rénovation et tendances architecturales au Togo."
         canonical="/rechercher"
         noindex={!q}
         jsonLd={[

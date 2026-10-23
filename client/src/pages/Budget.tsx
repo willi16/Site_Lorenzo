@@ -105,7 +105,7 @@ export default function BudgetPage() {
     <>
       <Seo
         title="Calculateur de budget construction — Estimation en ligne | B.A. Construction Togo"
-        description="Estimez en 30 secondes le budget de votre projet de construction au Togo : prix au m², niveau de finition, options. Fourchette indicative en FCFA, sans engagement."
+        description="Estimez en 30 secondes le budget de votre projet de construction au Togo : prix au m², finition, options. Fourchette en FCFA, sans engagement."
         canonical="/budget"
         keywords={[
           'calculateur budget construction Togo',

@@ -40,7 +40,7 @@ export default function AboutPage() {
     <>
       <Seo
         title="Le cabinet — B.A. Construction, architectes et constructeurs à Lomé"
-        description="Découvrez notre équipe d’architectes, nos valeurs, nos certifications et nos partenaires. Un cabinet togolais engagé dans la qualité, la transparence et la durabilité."
+        description="Découvrez notre équipe d’architectes, nos valeurs, nos certifications et nos partenaires. Un cabinet togolais engagé dans la qualité et la transparence."
         canonical="/le-cabinet"
         keywords={[
           'cabinet architecture Togo',

@@ -68,7 +68,7 @@ export default function MethodologyPage() {
     <>
       <Seo
         title="Notre méthodologie — Du premier contact à la réception de votre chantier"
-        description="Un process en 7 étapes : premier contact, visite du site, esquisses, plans détaillés, permis de construire, sélection des entreprises, suivi de chantier et réception. Méthodes BIM, rendus 3D et visites virtuelles."
+        description="Un process en 7 étapes, du premier contact à la réception : esquisses, plans, permis de construire, choix des entreprises et suivi de chantier."
         canonical="/methodologie"
         keywords={[
           'méthodologie architecte Togo',

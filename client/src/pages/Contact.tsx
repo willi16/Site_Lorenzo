@@ -146,7 +146,7 @@ export default function ContactPage() {
     <>
       <Seo
         title="Contact & demande de devis — B.A. Construction, Lomé Togo"
-        description="Parlez-nous de votre projet de construction, rénovation ou aménagement à Lomé. Devis gratuit sous 48 h, rendez-vous en ligne, coordonnées complètes du cabinet."
+        description="Parlez-nous de votre projet de construction, rénovation ou aménagement à Lomé. Devis gratuit sous 48 h, rendez-vous en ligne, coordonnées complètes."
         canonical="/contact"
         keywords={[
           'devis construction Lomé',
