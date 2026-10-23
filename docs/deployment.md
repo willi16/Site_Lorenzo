@@ -27,9 +27,7 @@ Objectif : déployer gratuitement, avec un seul service qui sert l'API + le rend
 3. Connecter le dépôt `willi16/Site_Lorenzo` et sélectionner la branche `main`.
 4. Render détectera `render.yaml`. Valider le déploiement du blueprint.
 5. Dans **Environment** du service créé, renseigner :
-   - `DATABASE_URL` : la connection string Neon (avec `sslmode=require`) — **obligatoire avant le premier build**, car les migrations y sont appliquées
-   - `SEED_ADMIN_PASSWORD` : mot de passe fort pour l'admin (remplacer le mot de passe par défaut)
-   - `SEED_EDITOR_PASSWORD` : mot de passe fort pour l'éditeur
+   - `DATABASE_URL` : la connection string Neon **directe** (sans `-pooler`, avec `sslmode=require`) — **obligatoire avant le premier build**, car les migrations y sont appliquées. La connexion « pooler » de Neon n'est pas fiable pour `prisma migrate deploy`.
    - `APP_URL`, `API_URL`, `CORS_ORIGINS` : **inutiles** par défaut, le serveur les déduit de `RENDER_EXTERNAL_URL` (variable fournie automatiquement par Render). Ne les définir que pour utiliser un domaine personnalisé.
 6. Relancer un **Manual Deploy** si des variables ont été ajoutées après la première création.
 
@@ -45,14 +43,16 @@ Objectif : déployer gratuitement, avec un seul service qui sert l'API + le rend
 
 ## 3) Initialiser les données
 
-Le seed n'est **pas** lancé automatiquement par le build pour éviter d'écraser des données existantes. Après le premier déploiement réussi :
+Le seed n'est **pas** lancé automatiquement par le build pour éviter d'écraser des données existantes. Il peut être exécuté **avant** le déploiement, depuis la machine locale (recommandé : Neon est directement accessible) :
 
-1. Dans Render → votre service → **Shell** (ou localement en pointant `DATABASE_URL` vers Neon).
-2. Exécuter :
+1. Pointer `DATABASE_URL` vers Neon, puis appliquer les migrations et le seed avec des mots de passe forts :
    ```bash
-   npm run db:seed
+   DATABASE_URL='postgresql://…direct…?sslmode=require' \
+   SEED_ADMIN_PASSWORD='…' SEED_EDITOR_PASSWORD='…' \
+   npm run db:deploy && npm run db:seed
    ```
-3. Noter les identifiants affichés et **changer immédiatement** les mots de passe depuis l'administration.
+2. Alternative : dans Render → votre service → **Shell**, exécuter la même commande.
+3. Noter les identifiants et **changer les mots de passe** depuis l'administration après la première connexion.
 
 ## 4) Fichier `.env` minimal pour la prod
 
@@ -81,6 +81,7 @@ MAIL_ENABLED=false
 UPLOAD_DIR=./storage/uploads
 MAX_UPLOAD_MB=10
 
+# Uniquement pour exécuter le seed (jamais nécessaires au runtime).
 SEED_ADMIN_EMAIL=admin@ba-construction.tg
 SEED_ADMIN_PASSWORD=<fort>
 SEED_EDITOR_EMAIL=editeur@ba-construction.tg

@@ -46,11 +46,6 @@ services:
         sync: false
       # APP_URL, API_URL et CORS_ORIGINS sont déduits de RENDER_EXTERNAL_URL.
       # Ne les définir que pour forcer un domaine personnalisé.
-      - key: SEED_ADMIN_EMAIL
-        value: admin@ba-construction.tg
-      - key: SEED_ADMIN_PASSWORD
-        sync: false
-      - key: SEED_EDITOR_EMAIL
-        value: editeur@ba-construction.tg
-      - key: SEED_EDITOR_PASSWORD
-        sync: false
+      #
+      # Le seed n'est pas exécuté au déploiement (pour ne jamais écraser des
+      # données). Pour (re)peupler la base, voir docs/deployment.md §3.
