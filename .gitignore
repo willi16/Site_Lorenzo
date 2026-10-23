@@ -1,0 +1,30 @@
+# Dépendances
+node_modules/
+
+# Builds
+dist/
+dist-ssr/
+server/dist/
+*.tsbuildinfo
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# Stockage local
+storage/uploads/*
+storage/private/*
+!storage/uploads/.gitkeep
+!storage/private/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Divers
+.DS_Store
+.vscode/
+.idea/
+coverage/

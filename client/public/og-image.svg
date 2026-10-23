@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="B.A. Construction — Architecture et construction au Togo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#142a3e" />
+      <stop offset="55%" stop-color="#1a3751" />
+      <stop offset="100%" stop-color="#0e1f2e" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f07a45" />
+      <stop offset="100%" stop-color="#e76836" />
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#f9f6e7" stroke-opacity="0.06" stroke-width="1" />
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+  <circle cx="1030" cy="120" r="220" fill="#e76836" fill-opacity="0.14" />
+  <circle cx="180" cy="560" r="180" fill="#76c3e9" fill-opacity="0.10" />
+
+  <g transform="translate(96 96)">
+    <rect width="96" height="96" rx="20" fill="#f9f6e7" />
+    <path d="M24 70V27h18.8c9 0 14.7 4.8 14.7 12.3 0 5.4-3 9.1-7.8 11 6 1.5 9.6 5.7 9.6 11.8 0 4.5-1.8 8 5.1 10.2-2.3 2.2-4.9 3.3-8 3.3H24Z" fill="#1a3751" />
+    <text x="122" y="46" font-family="Manrope, system-ui, sans-serif" font-size="38" font-weight="800" fill="#f9f6e7" letter-spacing="-1">B.A. Construction</text>
+    <text x="124" y="76" font-family="Inter, system-ui, sans-serif" font-size="17" font-weight="700" fill="#e76836" letter-spacing="5">LUNDI BÂTISSEUR · TOGO</text>
+  </g>
+
+  <text x="96" y="330" font-family="Manrope, system-ui, sans-serif" font-size="62" font-weight="800" fill="#f9f6e7" letter-spacing="-1.6">
+    Architecture, construction
+  </text>
+  <text x="96" y="402" font-family="Manrope, system-ui, sans-serif" font-size="62" font-weight="800" fill="#f9f6e7" letter-spacing="-1.6">
+    et rénovation au Togo.
+  </text>
+  <rect x="96" y="440" width="196" height="6" rx="3" fill="url(#accent)" />
+  <text x="96" y="510" font-family="Inter, system-ui, sans-serif" font-size="25" fill="#f9f6e7" fill-opacity="0.78">
+    Lomé · Tsévié · Kégué · Sokodé · Aného
+  </text>
+  <text x="96" y="560" font-family="Inter, system-ui, sans-serif" font-size="23" font-weight="600" fill="#76c3e9">
+    +228 91 08 55 50 · contact@ba-construction.tg
+  </text>
+</svg>

@@ -1,0 +1,42 @@
+{
+  "name": "ba-construction",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site web du cabinet B.A. Construction - architecture, construction et renovation au Togo",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev --workspace server",
+    "dev:web": "npm run dev --workspace client",
+    "build": "npm run build --workspace server && npm run build --workspace client",
+    "build:server": "npm run build --workspace server",
+    "build:client": "npm run build --workspace client",
+    "start": "npm run start --workspace server",
+    "prerender": "npm run prerender --workspace server",
+    "db:migrate": "npm run db:migrate --workspace server",
+    "db:seed": "npm run db:seed --workspace server",
+    "db:reset": "npm run db:reset --workspace server",
+    "db:studio": "npm run db:studio --workspace server",
+    "typecheck": "npm run typecheck --workspace server && npm run typecheck --workspace client",
+    "lint": "npm run lint --workspace server && npm run lint --workspace client",
+    "test": "npm run test --workspace server",
+    "setup": "npm run db:deploy && npm run db:seed",
+    "db:deploy": "npm run db:deploy --workspace server"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
+    "typescript-eslint": "^8.72.0"
+  }
+}

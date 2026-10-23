@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-label="B.A. Construction — Lundi Bâtisseur">
+  <rect width="64" height="64" rx="14" fill="#1a3751" />
+  <path d="M16 46V18h12.5c6 0 9.8 3.2 9.8 8.2 0 3.6-2 6.1-5.2 7.3 4 1 6.4 3.8 6.4 7.9 0 3-1.2 5.3-3.4 6.8-2.2 1.5-4.9 2.2-8.1 2.2H16Zm6.6-15.4h5.1c2.8 0 4.4-1.3 4.4-3.5s-1.6-3.4-4.4-3.4h-5.1v6.9Zm0 11.7h5.6c3.1 0 4.8-1.3 4.8-3.8 0-2.4-1.7-3.7-4.8-3.7h-5.6v7.5Z" fill="#f9f6e7" />
+  <path d="M41.5 46V30.5h5.6V46h-5.6Zm2.8-19.2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" fill="#e76836" />
+  <text x="80" y="30" font-family="Manrope, system-ui, sans-serif" font-size="21" font-weight="800" fill="#1a3751" letter-spacing="-0.5">B.A. Construction</text>
+  <text x="80" y="49" font-family="Inter, system-ui, sans-serif" font-size="11.5" font-weight="600" fill="#e76836" letter-spacing="2.4">LUNDI BÂTISSEUR</text>
+</svg>

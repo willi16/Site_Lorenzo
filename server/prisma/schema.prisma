@@ -1,0 +1,366 @@
+// B.A. Construction — Schéma de données
+// Dev : PostgreSQL 16 (docker compose) | Prod : PostgreSQL managé
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────── Énumérations ───────────────────────────────
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum ProjectCategory {
+  RESIDENTIAL
+  COMMERCIAL
+  RENOVATION
+  INTERIOR
+  EXTERIOR
+}
+
+enum ProjectStatus {
+  CONCEPT
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PostCategory {
+  CONSEILS
+  TENDANCES
+  PROJETS
+  REGLEMENTATION
+  DURABLE
+  MATERIAUX
+}
+
+enum LeadStatus {
+  NEW
+  IN_PROGRESS
+  QUALIFIED
+  WON
+  LOST
+}
+
+enum SubscriberStatus {
+  PENDING
+  ACTIVE
+  UNSUBSCRIBED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// ──────────────────────────────── Utilisateurs ───────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role      @default(EDITOR)
+  active       Boolean   @default(true)
+  failedLogins Int       @default(0)
+  lockedUntil  DateTime?
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+  media         Media[]
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  userAgent String?
+  ip        String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  meta      Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ───────────────────────────────── Contenu ────────────────────────────────
+
+model Service {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  eyebrow        String?
+  excerpt        String
+  description    String
+  icon           String   @default("Building2")
+  coverImage     String?
+  highlights     String[] @default([])
+  deliverables   String[] @default([])
+  processNote    String?
+  seoTitle       String?
+  seoDescription String?
+  featured       Boolean  @default(false)
+  published      Boolean  @default(true)
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  projects Project[]
+
+  @@index([published, order])
+}
+
+model Project {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  title          String
+  subtitle       String?
+  category       ProjectCategory
+  status         ProjectStatus   @default(COMPLETED)
+  location       String
+  city           String?
+  country        String          @default("Togo")
+  year           Int
+  area           Float
+  budget         Int?
+  budgetLabel    String?
+  clientName     String?
+  excerpt        String
+  description    String
+  challenges     String?
+  solution       String?
+  features       String[]        @default([])
+  materials      String[]        @default([])
+  gallery        String[]        @default([])
+  beforeAfter    Json?
+  coverImage     String?
+  videoUrl       String?
+  virtualTourUrl String?
+  serviceId      String?
+  testimonialId  String?
+  featured       Boolean         @default(false)
+  published      Boolean         @default(true)
+  seoTitle       String?
+  seoDescription String?
+  order          Int             @default(0)
+  views          Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  service     Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  testimonial Testimonial? @relation(fields: [testimonialId], references: [id], onDelete: SetNull)
+
+  @@index([published, category])
+  @@index([published, year])
+  @@index([serviceId])
+}
+
+model Post {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  title          String
+  excerpt        String
+  content        String
+  coverImage     String?
+  category       PostCategory  @default(CONSEILS)
+  tags           String[]      @default([])
+  authorName     String        @default("B.A. Construction")
+  authorRole     String?
+  readMinutes    Int           @default(5)
+  published      Boolean       @default(true)
+  publishedAt    DateTime      @default(now())
+  seoTitle       String?
+  seoDescription String?
+  views          Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([published, publishedAt])
+  @@index([category])
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  name     String
+  role     String
+  bio      String
+  photo    String?
+  email    String?
+  phone    String?
+  linkedin String?
+  skills   String[] @default([])
+  order    Int      @default(0)
+  active   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  authorName String
+  authorRole String?
+  company    String?
+  avatar     String?
+  rating     Int      @default(5)
+  quote      String
+  published  Boolean  @default(true)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  projects Project[]
+
+  @@index([published, order])
+}
+
+model Certification {
+  id          String   @id @default(cuid())
+  title       String
+  issuer      String
+  year        String?
+  logo        String?
+  description String?
+  order       Int      @default(0)
+}
+
+model Partner {
+  id       String  @id @default(cuid())
+  name     String
+  type     String
+  logo     String?
+  website  String?
+  order    Int     @default(0)
+}
+
+model ProcessStep {
+  id          String  @id @default(cuid())
+  number      Int
+  title       String
+  description String
+  icon        String  @default("Compass")
+  duration    String?
+  order       Int     @default(0)
+}
+
+model Stat {
+  id     String @id @default(cuid())
+  label  String
+  value  String
+  suffix String?
+  icon   String?
+  order  Int    @default(0)
+}
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ──────────────────────────────── Leads & Leads ────────────────────────────
+
+model Lead {
+  id                String     @id @default(cuid())
+  firstName         String
+  lastName          String
+  email             String
+  phone             String
+  projectType       String
+  area              String?
+  budget            String?
+  location          String
+  description       String
+  contactPreference String     @default("email")
+  attachments       String[]   @default([])
+  source            String     @default("website")
+  status            LeadStatus @default(NEW)
+  internalNotes     String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+model NewsletterSubscriber {
+  id                String           @id @default(cuid())
+  email             String           @unique
+  name              String?
+  source            String           @default("website")
+  status            SubscriberStatus @default(PENDING)
+  confirmToken      String           @unique
+  /// Jeton distinct du jeton de confirmation : il permet de désinscrire un
+  /// abonné sans invalider le lien de confirmation (et inversement).
+  unsubscribeToken  String           @unique
+  subscribedAt      DateTime?
+  unsubscribedAt    DateTime?
+  createdAt         DateTime         @default(now())
+}
+
+model Appointment {
+  id        String            @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  date      DateTime
+  slot      String
+  duration  Int               @default(45)
+  subject   String?
+  notes     String?
+  status    AppointmentStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([date])
+  @@index([status])
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String
+  url          String?
+  mimeType     String
+  size         Int
+  alt          String?
+  width        Int?
+  height       Int?
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+}

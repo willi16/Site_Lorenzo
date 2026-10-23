@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ba-construction-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ba_construction}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ba_construction_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-ba_construction}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - ba-construction-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-ba_construction} -d ${POSTGRES_DB:-ba_construction}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Interface d'administration (optionnel) : http://localhost:8080
+  adminer:
+    image: adminer:4
+    container_name: ba-construction-adminer
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '8080:8080'
+
+volumes:
+  ba-construction-db:
+    name: ba-construction-db

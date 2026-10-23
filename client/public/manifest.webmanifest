@@ -1,0 +1,19 @@
+{
+  "name": "B.A. Construction — Architecture et construction au Togo",
+  "short_name": "B.A. Construction",
+  "description": "Cabinet d'architecture et de construction à Lomé, Togo : construction résidentielle et commerciale, rénovation, aménagement intérieur et extérieur.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a3751",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
