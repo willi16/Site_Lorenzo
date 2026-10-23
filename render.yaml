@@ -40,15 +40,12 @@ services:
         generateValue: true
       - key: CSRF_SECRET
         generateValue: true
-      # À renseigner dans le tableau de bord Render (valeurs propres au compte).
+      # À renseigner dans le tableau de bord Render (valeur propre au compte).
+      # Obligatoire dès le premier déploiement : les migrations tournent au build.
       - key: DATABASE_URL
         sync: false
-      - key: APP_URL
-        sync: false
-      - key: API_URL
-        sync: false
-      - key: CORS_ORIGINS
-        sync: false
+      # APP_URL, API_URL et CORS_ORIGINS sont déduits de RENDER_EXTERNAL_URL.
+      # Ne les définir que pour forcer un domaine personnalisé.
       - key: SEED_ADMIN_EMAIL
         value: admin@ba-construction.tg
       - key: SEED_ADMIN_PASSWORD

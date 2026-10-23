@@ -11,6 +11,28 @@ loadEnv({ path: path.join(repoRoot, '.env') });
 loadEnv({ path: path.join(serverRoot, '.env') });
 
 /**
+ * Render expose automatiquement l'URL publique du service via
+ * `RENDER_EXTERNAL_URL`. On s'en sert comme valeur par défaut pour `APP_URL`,
+ * `API_URL` et `CORS_ORIGINS` : sans cela, un premier déploiement échouerait
+ * (APP_URL en http) ou rejetterait les requêtes same-origin (Origin absent de
+ * la liste blanche CORS). Une variable explicitement définie reste prioritaire.
+ */
+const renderBaseUrl = (() => {
+  const value = process.env.RENDER_EXTERNAL_URL?.trim().replace(/\/+$/, '');
+  return value && /^https?:\/\//.test(value) ? value : undefined;
+})();
+
+const LOCAL_URL_PATTERN = /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/;
+
+/**
+ * Sur Render, une valeur locale (issue d'un `.env` copié par erreur ou d'un
+ * ancien réglage) ne doit pas prendre le pas sur l'URL publique du service.
+ */
+function preferRenderUrl(value: string): string {
+  return renderBaseUrl && LOCAL_URL_PATTERN.test(value) ? renderBaseUrl : value;
+}
+
+/**
  * Interprète une variable d'environnement comme un booléen.
  *
  * `z.coerce.boolean()` applique la règle de JavaScript `Boolean(v)` : la chaîne
@@ -47,8 +69,16 @@ const envSchema = z
       .min(1, 'DATABASE_URL est obligatoire')
       .refine((v) => v.startsWith('postgres'), 'DATABASE_URL doit pointer vers PostgreSQL'),
 
-    APP_URL: z.string().url().default('http://localhost:5173'),
-    API_URL: z.string().url().default('http://localhost:4000'),
+    APP_URL: z
+      .string()
+      .url()
+      .default(renderBaseUrl ?? 'http://localhost:5173')
+      .transform(preferRenderUrl),
+    API_URL: z
+      .string()
+      .url()
+      .default(renderBaseUrl ?? 'http://localhost:4000')
+      .transform(preferRenderUrl),
     TRUST_PROXY: booleanFromEnv(false),
 
     // Secret de signature JWT (obligatoire en production)
@@ -58,7 +88,19 @@ const envSchema = z
     REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
 
     // CORS
-    CORS_ORIGINS: z.string().default('http://localhost:5173,http://localhost:4000'),
+    CORS_ORIGINS: z
+      .string()
+      .default(renderBaseUrl ?? 'http://localhost:5173,http://localhost:4000')
+      .transform((value) => {
+        const origins = value
+          .split(',')
+          .map((origin) => origin.trim())
+          .filter(Boolean);
+        if (renderBaseUrl && origins.length > 0 && origins.every((o) => LOCAL_URL_PATTERN.test(o))) {
+          return renderBaseUrl;
+        }
+        return value;
+      }),
 
     // Sécurité applicative
     CSRF_SECRET: z.string().min(32, 'CSRF_SECRET doit faire au moins 32 caractères'),

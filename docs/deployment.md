@@ -27,12 +27,10 @@ Objectif : déployer gratuitement, avec un seul service qui sert l'API + le rend
 3. Connecter le dépôt `willi16/Site_Lorenzo` et sélectionner la branche `main`.
 4. Render détectera `render.yaml`. Valider le déploiement du blueprint.
 5. Dans **Environment** du service créé, renseigner :
-   - `DATABASE_URL` : la connection string Neon (avec `sslmode=require`)
-   - `APP_URL` : `https://<nom-du-service>.onrender.com` (Render l'indiquera après premier déploiement ou à renseigner)
-   - `API_URL` : même valeur que `APP_URL`
-   - `CORS_ORIGINS` : même valeur que `APP_URL` (séparer par virgule si vous ajoutez un domaine perso)
+   - `DATABASE_URL` : la connection string Neon (avec `sslmode=require`) — **obligatoire avant le premier build**, car les migrations y sont appliquées
    - `SEED_ADMIN_PASSWORD` : mot de passe fort pour l'admin (remplacer le mot de passe par défaut)
    - `SEED_EDITOR_PASSWORD` : mot de passe fort pour l'éditeur
+   - `APP_URL`, `API_URL`, `CORS_ORIGINS` : **inutiles** par défaut, le serveur les déduit de `RENDER_EXTERNAL_URL` (variable fournie automatiquement par Render). Ne les définir que pour utiliser un domaine personnalisé.
 6. Relancer un **Manual Deploy** si des variables ont été ajoutées après la première création.
 
 ### Commandes utilisées
@@ -66,8 +64,9 @@ HOST=0.0.0.0
 PORT=10000
 TRUST_PROXY=true
 
-DATABASE_URL=postgresql://...neon.tech/... ?sslmode=require
+DATABASE_URL=postgresql://...neon.tech/...?sslmode=require
 
+# Facultatif : déduits de RENDER_EXTERNAL_URL. À définir uniquement pour un domaine perso.
 APP_URL=https://ba-construction.onrender.com
 API_URL=https://ba-construction.onrender.com
 CORS_ORIGINS=https://ba-construction.onrender.com
