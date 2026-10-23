@@ -8,8 +8,9 @@ import { requireAuth, requireRole } from '../../middleware/auth.js';
 import { upload, privateUpload, toMediaPayload } from '../../middleware/upload.js';
 import { formLimiter } from '../../middleware/rateLimit.js';
 import { env } from '../../config/env.js';
-import { badRequest, notFound } from '../../lib/errors.js';
+import { AppError, badRequest, notFound } from '../../lib/errors.js';
 import { logger } from '../../lib/logger.js';
+import { deletePublicAsset, isExternalMediaUrl, uploadPublicAsset } from '../../lib/cloudinary.js';
 
 const router = Router();
 
@@ -71,7 +72,37 @@ router.post(
     const alt = (req.body as { alt?: string }).alt ?? '';
     const created = [];
     for (const file of files) {
-      const payload = toMediaPayload(file);
+      let payload: {
+        filename: string;
+        originalName: string;
+        url: string;
+        mimeType: string;
+        size: number;
+      };
+      if (env.cloudinaryEnabled) {
+        try {
+          const asset = await uploadPublicAsset(file);
+          payload = {
+            filename: asset.publicId,
+            originalName: file.originalname,
+            url: asset.url,
+            mimeType: file.mimetype,
+            size: file.size,
+          };
+        } catch (err) {
+          logger.error({ err, file: file.originalname }, 'Échec du téléversement Cloudinary');
+          throw new AppError(502, 'STORAGE_UNAVAILABLE', 'Le stockage des médias est momentanément indisponible');
+        } finally {
+          // Le fichier local n'est qu'un temporaire pour Cloudinary. En repli
+          // local (Cloudinary désactivé), il est conservé et servi par l'app.
+          if (env.cloudinaryEnabled) {
+            await fs.promises.unlink(file.path).catch(() => undefined);
+          }
+        }
+      } else {
+        payload = toMediaPayload(file);
+      }
+
       const media = await prisma.media.create({
         data: { ...payload, alt: alt || file.originalname, uploadedById: req.user!.id },
       });
@@ -100,16 +131,21 @@ router.delete(
   async (req, res) => {
     const media = await prisma.media.findUnique({ where: { id: req.params.id } });
     if (!media) throw notFound('Média introuvable');
-    // Les pièces jointes de leads vivent dans `privateDir`, les médias publiés
-    // dans `storageDir`. Ne regarder que le second provoquait un ENOENT
-    // silencieux : la ligne partait mais le fichier restait sur le disque.
-    const fileName = path.basename(media.filename);
-    for (const dir of [env.storageDir, env.privateDir]) {
-      try {
-        await fs.promises.unlink(path.join(dir, fileName));
-        break;
-      } catch {
-        // Fichier absent dans ce répertoire : on tente le suivant.
+    if (isExternalMediaUrl(media.url)) {
+      // Média hébergé sur Cloudinary (URL absolue) : pas de fichier local.
+      await deletePublicAsset(media.filename);
+    } else {
+      // Les pièces jointes de leads vivent dans `privateDir`, les médias publiés
+      // dans `storageDir`. Ne regarder que le second provoquait un ENOENT
+      // silencieux : la ligne partait mais le fichier restait sur le disque.
+      const fileName = path.basename(media.filename);
+      for (const dir of [env.storageDir, env.privateDir]) {
+        try {
+          await fs.promises.unlink(path.join(dir, fileName));
+          break;
+        } catch {
+          // Fichier absent dans ce répertoire : on tente le suivant.
+        }
       }
     }
     await prisma.media.delete({ where: { id: media.id } });

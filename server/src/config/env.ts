@@ -114,6 +114,13 @@ const envSchema = z
     MAX_UPLOAD_MB: z.coerce.number().int().positive().default(10),
     UPLOAD_DIR: z.string().default('./storage/uploads'),
 
+    // Stockage externe des médias publics (Cloudinary, optionnel).
+    // Sans ces trois variables, les fichiers restent sur le disque local.
+    CLOUDINARY_CLOUD_NAME: z.string().default(''),
+    CLOUDINARY_API_KEY: z.string().default(''),
+    CLOUDINARY_API_SECRET: z.string().default(''),
+    CLOUDINARY_FOLDER: z.string().default('ba-construction'),
+
     // Email (SMTP)
     SMTP_HOST: z.string().default(''),
     SMTP_PORT: z.coerce.number().int().positive().default(587),
@@ -145,6 +152,21 @@ const envSchema = z
         });
       }
     }
+
+    const cloudinaryParts = [
+      env.CLOUDINARY_CLOUD_NAME,
+      env.CLOUDINARY_API_KEY,
+      env.CLOUDINARY_API_SECRET,
+    ];
+    const configuredParts = cloudinaryParts.filter((part) => part.trim() !== '').length;
+    if (configuredParts > 0 && configuredParts < cloudinaryParts.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['CLOUDINARY_CLOUD_NAME'],
+        message:
+          'Cloudinary est partiellement configuré : renseignez CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY et CLOUDINARY_API_SECRET, ou aucune des trois.',
+      });
+    }
   });
 
 const parsed = envSchema.safeParse(process.env);
@@ -165,6 +187,11 @@ export const env = {
   corsOrigins: parsed.data.CORS_ORIGINS.split(',')
     .map((o) => o.trim())
     .filter(Boolean),
+  cloudinaryEnabled: Boolean(
+    parsed.data.CLOUDINARY_CLOUD_NAME &&
+      parsed.data.CLOUDINARY_API_KEY &&
+      parsed.data.CLOUDINARY_API_SECRET,
+  ),
   repoRoot,
   serverRoot,
   clientDist: path.join(repoRoot, 'client', 'dist'),

@@ -104,9 +104,35 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 | `/admin/login` | Formulaire accessible |
 | Connexion admin | Fonctionnelle avec les identifiants seed |
 
+## 6) Médias persistants (Cloudinary)
+
+Sans configuration, les médias publics sont écrits dans `./storage/uploads`, un disque éphémère sur Render Free. Pour les conserver :
+
+1. Créer un compte gratuit sur [cloudinary.com](https://cloudinary.com/).
+2. Dashboard → **Product Environment Credentials** : relever **Cloud name**, **API Key**, **API Secret**.
+3. Dans Render → **Environment**, ajouter :
+   ```env
+   CLOUDINARY_CLOUD_NAME=...
+   CLOUDINARY_API_KEY=...
+   CLOUDINARY_API_SECRET=...
+   CLOUDINARY_FOLDER=ba-construction
+   ```
+4. **Save, rebuild, and deploy**.
+
+Les médias envoyés depuis l'administration sont alors stockés sur Cloudinary (URL `https://res.cloudinary.com/...`) et survivent aux redéploiements. Les pièces jointes des demandes de contact restent **locales et privées** (non publiées sur Cloudinary).
+
+## 7) Déploiement automatique
+
+Un service créé depuis une **URL de dépôt public** ne bénéficie pas de l'auto-deploy : il faut cliquer sur **Manual Deploy** après chaque push. Pour l'activer :
+
+1. Installer l'app GitHub de Render : **https://github.com/apps/render/installations/new** → compte `willi16` → *Only select repositories* → `Site_Lorenzo` → **Install**.
+2. Render → service → **Settings → Build & Deploy → Source → Edit** → **GitHub** → `willi16/Site_Lorenzo`, branche `main` → **Save**.
+
+Chaque push sur `main` redéploie alors automatiquement. Alternative sans GitHub : créer un **Deploy Hook** dans les réglages du service et l'appeler depuis une GitHub Action (URL conservée dans un secret du dépôt).
+
 ## Astuces & limites (gratuit)
 
-- **Stockage des uploads** : le disque éphémère de Render Free est réinitialisé à chaque déploiement. Pour des uploads persistants, utiliser [Cloudinary](https://cloudinary.com/) (gratuit) ou [R2](https://developers.cloudflare.com/r2/) (gratuit). Actuellement les uploads vont dans `./storage/uploads`.
+- **Stockage** : avec Cloudinary configuré, les médias publics sont persistants. Les pièces jointes de contact restent sur le disque éphémère (à télécharger rapidement ou à traiter par e-mail).
 - **Sommeil** : Render Free endort le service sans trafic.
 - **Build time** : un peu long au premier build (prisma generate + vite build + tsc) — normal.
 - **Domaine perso** : Render Free ne permet pas toujours les domaines personnalisés sans contraintes ; vérifier au moment voulu.
